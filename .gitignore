@@ -2,3 +2,5 @@
 logs
 vendor
 nohup.out
+main
+*.xlsx

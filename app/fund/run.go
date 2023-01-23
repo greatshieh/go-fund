@@ -6,6 +6,7 @@ import (
 	"gospider/global"
 	"gospider/utils"
 	"sync"
+	"time"
 )
 
 type FundResult struct {
@@ -39,7 +40,7 @@ func Run() {
 	wg.Wait()
 
 	writer := new(utils.Writer)
-	writer.New("result")
+	writer.New(fmt.Sprintf("基金汇总_%s", time.Now().Format("2006-01-02")))
 	for _, name := range fundtypes {
 		writer.NewStreamWriter(name)
 		writer.WriteHeader(model.FundModel{})

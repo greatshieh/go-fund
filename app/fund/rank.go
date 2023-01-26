@@ -30,7 +30,7 @@ var period = map[string]map[string]int{
 	"2n": {"index": 10, "threshold": 4},
 	"3n": {"index": 11, "threshold": 4},
 	"5n": {"index": 12, "threshold": 4},
-	"jn": {"index": 5, "threshold": 4},
+	// "jn": {"index": 5, "threshold": 4},
 }
 
 // GET请求参数

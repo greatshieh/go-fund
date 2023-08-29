@@ -6,6 +6,7 @@ import (
 	"gospider/app/fund"
 	"gospider/global"
 	"gospider/initialize"
+	"gospider/utils"
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
@@ -104,5 +105,7 @@ func main() {
 
 	defer removeContainer(cli, conID)
 
-	fund.Run()
+	fileName := fund.Run()
+
+	utils.SendEmail(fileName)
 }

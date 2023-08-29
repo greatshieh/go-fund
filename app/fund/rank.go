@@ -12,11 +12,12 @@ import (
 )
 
 type TableInfo struct {
-	Data      []string `json:"datas"`
-	AllPages  string   `json:"allPages"`
-	PageIndex string   `json:"pageIndex"`
-	PageNum   string   `json:"pageNum"`
-	Datacount string   `json:"datacount"`
+	Data       []string `json:"datas"`
+	AllPages   int      `json:"allPages"`
+	PageIndex  int      `json:"pageIndex"`
+	PageNum    int      `json:"pageNum"`
+	AllRecords int      `json:"allRecords"`
+	AllNum     int      `json:"allNum"`
 }
 
 // 需要采集的基金类型
@@ -24,49 +25,52 @@ var fundtypes = map[string]string{"gp": "股票型", "hh": "混合型", "zq": "�
 
 // 需要采集的排名周期
 var period = map[string]map[string]int{
-	"3y": {"index": 7, "threshold": 3},
-	"6y": {"index": 8, "threshold": 3},
-	"1n": {"index": 9, "threshold": 4},
-	"2n": {"index": 10, "threshold": 4},
-	"3n": {"index": 11, "threshold": 4},
-	"5n": {"index": 12, "threshold": 4},
-	// "jn": {"index": 5, "threshold": 4},
+	"1nzf": {"index": 9, "threshold": 4},
+	"2nzf": {"index": 10, "threshold": 4},
+	"3nzf": {"index": 11, "threshold": 4},
+	"5nzf": {"index": 12, "threshold": 4},
+	"jnzf": {"index": 5, "threshold": 4},
+	"6yzf": {"index": 8, "threshold": 3},
+	"3yzf": {"index": 7, "threshold": 3},
 }
 
 // GET请求参数
-var params = map[string]string{"dt": "4",
+var params = map[string]string{
+	"dt": "kf",
+	"op": "ph",
 	"ft": "",
-	"sd": "",
-	"ed": "",
+	"rs": "",
+	"gs": "0",
 	"sc": "",
 	"st": "desc",
 	"pi": "1",
-	"pn": "100",
-	"zf": "diy",
-	"sh": "list",
+	"pn": "50",
+	"dx": "1",
 }
 
 // 排名筛选链接
-const URL = "http://fund.eastmoney.com/data/FundGuideapi.aspx"
+const URL = "http://fund.eastmoney.com/data/rankhandler.aspx"
 
 var locker sync.Mutex
 
 // rankParser 解析数据
 func rankParser(resp string, index int, threshold int, records *map[string]int) (bool, string) {
-	re := regexp.MustCompile(`var rankData =(.*)`)
+	re := regexp.MustCompile(`var rankData = (.*);`)
 	regex := re.FindStringSubmatch(resp)
 
+	reg := regexp.MustCompile(`([a-zA-Z]\w*):`)
+	regStr := reg.ReplaceAllString(regex[1], `"$1":`)
+
 	result := new(TableInfo)
-	json.Unmarshal([]byte(regex[1]), result)
+	json.Unmarshal([]byte(regStr), result)
 
 	data := result.Data
 
-	limitedCount, _ := strconv.ParseInt(result.Datacount, 10, 64)
-	limitedCount = int64(limitedCount / int64(threshold))
-	// var limitedCount int64 = 4
+	// limitedCount := result.AllRecords
+	limitedCount := int(result.AllRecords / int(threshold))
 
-	pageIndex, _ := strconv.ParseInt(result.PageIndex, 10, 64)
-	pageNum, _ := strconv.ParseInt(result.PageNum, 10, 64)
+	pageIndex := result.PageIndex
+	pageNum := result.PageNum
 
 	total := (pageIndex - 1) * pageNum
 
@@ -81,7 +85,7 @@ func rankParser(resp string, index int, threshold int, records *map[string]int) 
 
 		total++
 		if total >= limitedCount {
-			return true, fmt.Sprintf("超过排名 %d / %d", total, limitedCount)
+			return true, fmt.Sprintf("超过排名 %d / %d", total, result.AllRecords)
 		}
 	}
 

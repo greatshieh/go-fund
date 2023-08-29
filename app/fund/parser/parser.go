@@ -157,15 +157,9 @@ func ParseSelector(resp *downloader.Response) interface{} {
 	} else {
 		if strings.Contains(string(resp.Resp), "cyrjg") {
 			model := holdInfoParser(string(resp.Resp))
-			// code := getCode(resp.ResqURL.RawQuery)
-			// model.Fcode = code
 			return model
 		} else {
 			models := yearlyGainsParser(string(resp.Resp))
-			// code := getCode(resp.ResqURL.RawQuery)
-			// for i := 0; i < len(models); i++ {
-			// 	models[i].Fcode = code
-			// }
 			return models
 		}
 	}

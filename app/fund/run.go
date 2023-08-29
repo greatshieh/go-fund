@@ -7,6 +7,8 @@ import (
 	"gospider/utils"
 	"sync"
 	"time"
+
+	"github.com/xuri/excelize/v2"
 )
 
 type FundResult struct {
@@ -14,10 +16,7 @@ type FundResult struct {
 	Result    *model.FundModel
 }
 
-func Run() {
-	// filePath := path.Join(global.GPA_CONFIG.Spider.FilePath, "/", "funds_all")
-	// getAllFunds(filePath)
-	// getSpecifies(filePath, "allfund")
+func Run() string {
 	var fundChan = make(chan []string, 10)
 	var resultChan = make(chan FundResult, 10)
 
@@ -40,16 +39,20 @@ func Run() {
 	wg.Wait()
 
 	writer := new(utils.Writer)
-	writer.New(fmt.Sprintf("基金汇总_%s", time.Now().Format("2006-01-02")))
+	fileName := fmt.Sprintf("基金汇总_%s", time.Now().Format("2006-01-02"))
+	writer.New(fileName)
 	for _, name := range fundtypes {
 		writer.NewStreamWriter(name)
-		writer.WriteHeader(model.FundModel{})
+		ncols := writer.WriteHeader(model.FundModel{})
 		for i, item := range waiting4Write[name] {
 			writer.WriteRow(item, i+2)
 		}
+		cell_pre, _ := excelize.CoordinatesToCellName(ncols, len(waiting4Write[name])+2)
+		writer.StreamWriter.AddTable("A1", cell_pre, "")
 		writer.StreamWriter.Flush()
 	}
 
 	writer.Save()
 
+	return fileName
 }

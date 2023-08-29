@@ -67,6 +67,7 @@ func (w *Writer) New(name string) {
 	// 生成xlsx文件
 	w.WorkBook = excelize.NewFile()
 	w.WorkBook.Path = fmt.Sprintf("%s.xlsx", name)
+	w.WorkBook.DeleteSheet("Sheet1")
 }
 
 // NewStreamWriter 生成新的名为 name 的工作表, 并创建新的流式写入器
@@ -79,9 +80,10 @@ func (w *Writer) NewStreamWriter(name string) {
 	w.StreamWriter = streamSheet
 }
 
-func (w *Writer) WriteHeader(model interface{}) {
+func (w *Writer) WriteHeader(model interface{}) int {
 	headers := createHeader(model)
 	w.StreamWriter.SetRow(fmt.Sprintf("A%d", 1), headers)
+	return len(headers)
 	// w.StreamWriter.Flush()
 }
 

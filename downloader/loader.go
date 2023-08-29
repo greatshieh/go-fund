@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"gospider/global"
 	"io"
-	"io/ioutil"
 	"math/rand"
 	"net/http"
 	"net/url"
@@ -47,7 +46,7 @@ func (l *Loader) DownLoad(req *http.Request) (*Response, error) {
 
 	defer resp.Body.Close()
 
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 
 	if err != nil {
 		return nil, errors.New("downloader: faild to read response")
@@ -76,7 +75,8 @@ func (l *Loader) DownLoad(req *http.Request) (*Response, error) {
 func NewRequest(method string, url string, body io.Reader, name string, params map[string]string) Request {
 	r, _ := http.NewRequest(method, url, body)
 	agent := createUserAgent()
-	r.Header.Set("User-Agent", agent)
+	r.Header.Add("User-Agent", agent)
+	r.Header.Add("Referer", "http://fund.eastmoney.com/data/fundranking.html")
 
 	if params != nil {
 		q := r.URL.Query()
@@ -139,7 +139,7 @@ func newProxy() (*url.URL, error) {
 
 	defer resp.Body.Close()
 
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 
 	if err != nil {
 		return new(url.URL), errors.New("proxy: faild to get proxy")

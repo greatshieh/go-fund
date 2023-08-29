@@ -35,7 +35,7 @@ zap:
   log-in-console: true
 
 spider:
-  proxy-enable: true
+  proxy-enable: false
   proxy-host: "127.0.0.1"
   proxy-port: "5050"
   routine-num: 256

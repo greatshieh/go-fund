@@ -27,8 +27,6 @@ func fundResp(fund FundInfo, name string) (*downloader.Response, error) {
 }
 
 func respProcessor(resp *downloader.Response) interface{} {
-	// m :=
-	// err := model.SaveSelector(m)
 	return parser.ParseSelector(resp)
 }
 

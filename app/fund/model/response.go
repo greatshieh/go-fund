@@ -1,5 +1,14 @@
 package model
 
+type SearchModel struct {
+	Data []FundBaseInfo `json:"Data"`
+}
+
+type FundBaseInfo struct {
+	Code string `json:"fundCode"`
+	Name string `json:"ftype"`
+}
+
 type JsonModel struct {
 	BaseInfo    baseInfo    `json:"JJXQ"`
 	FeatureData featureInfo `json:"TSSJ"`

@@ -6,7 +6,6 @@ import (
 	"gospider/app/fund"
 	"gospider/global"
 	"gospider/initialize"
-	"gospider/utils"
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
@@ -101,11 +100,11 @@ func main() {
 	global.GPA_LOG = initialize.Zap()  // 初始化zap日志库
 	zap.ReplaceGlobals(global.GPA_LOG)
 
-	cli, conID := createContainer()
+	// cli, conID := createContainer()
 
-	defer removeContainer(cli, conID)
+	// defer removeContainer(cli, conID)
+	fund.Run()
+	// fileName := fund.Run()
 
-	fileName := fund.Run()
-
-	utils.SendEmail(fileName)
+	// utils.SendEmail(fileName)
 }

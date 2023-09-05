@@ -60,8 +60,8 @@ func getInfo(modelChan chan<- interface{}, fund FundInfo, name string, wg *sync.
 	}
 }
 
-func downloadController(code string, name string) *model.FundModel {
-	fund := FundInfo{Code: code, Name: name}
+func downloadController(code string) *model.FundModel {
+	fund := FundInfo{Code: code}
 
 	var wig sync.WaitGroup
 
@@ -103,13 +103,12 @@ func downloadController(code string, name string) *model.FundModel {
 
 }
 
-func fundDetailFetch(fundChan <-chan []string, resultChan chan<- FundResult, wg *sync.WaitGroup) {
+func fundDetailFetch(fundChan <-chan model.FundBaseInfo, resultChan chan<- FundResult, wg *sync.WaitGroup) {
 	defer wg.Done()
 
 	for item := range fundChan {
-		code := item[0]
-		name := item[1]
-		resultChan <- FundResult{SheetName: item[2], Result: downloadController(code, name)}
+		code := item.Code
+		resultChan <- FundResult{SheetName: item.Name, Result: downloadController(code)}
 	}
 
 	close(resultChan)

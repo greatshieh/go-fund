@@ -76,7 +76,6 @@ func NewRequest(method string, url string, body io.Reader, name string, params m
 	r, _ := http.NewRequest(method, url, body)
 	agent := createUserAgent()
 	r.Header.Add("User-Agent", agent)
-	r.Header.Add("Referer", "http://fund.eastmoney.com/data/fundranking.html")
 
 	if params != nil {
 		q := r.URL.Query()

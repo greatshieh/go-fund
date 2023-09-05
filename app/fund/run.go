@@ -17,15 +17,14 @@ type FundResult struct {
 }
 
 func Run() string {
-	var fundChan = make(chan []string, 10)
+	var fundChan = make(chan model.FundBaseInfo, 10)
 	var resultChan = make(chan FundResult, 10)
 
 	var wg sync.WaitGroup
 	wg.Add(1)
-	go RankRun(fundChan, &wg)
+	go search(fundChan, &wg)
 
 	wg.Add(1)
-
 	go fundDetailFetch(fundChan, resultChan, &wg)
 
 	waiting4Write := make(map[string][]*model.FundModel)
@@ -41,13 +40,13 @@ func Run() string {
 	writer := new(utils.Writer)
 	fileName := fmt.Sprintf("基金汇总_%s", time.Now().Format("2006-01-02"))
 	writer.New(fileName)
-	for _, name := range fundtypes {
-		writer.NewStreamWriter(name)
+	for k, v := range waiting4Write {
+		writer.NewStreamWriter(k)
 		ncols := writer.WriteHeader(model.FundModel{})
-		for i, item := range waiting4Write[name] {
+		for i, item := range v {
 			writer.WriteRow(item, i+2)
 		}
-		cell_pre, _ := excelize.CoordinatesToCellName(ncols, len(waiting4Write[name])+2)
+		cell_pre, _ := excelize.CoordinatesToCellName(ncols, len(v)+2)
 		writer.StreamWriter.AddTable("A1", cell_pre, "")
 		writer.StreamWriter.Flush()
 	}

@@ -22,7 +22,7 @@ func Run() string {
 
 	var wg sync.WaitGroup
 	wg.Add(1)
-	go search(fundChan, &wg)
+	go ConditionSearch(fundChan, &wg)
 
 	wg.Add(1)
 	go fundDetailFetch(fundChan, resultChan, &wg)

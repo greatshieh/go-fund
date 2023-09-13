@@ -1,10 +1,10 @@
 package model
 
-type SearchModel struct {
-	Data []FundBaseInfo `json:"Data"`
+type SearchResponse struct {
+	Data []SearchResponseData `json:"Data"`
 }
 
-type FundBaseInfo struct {
+type SearchResponseData struct {
 	Code string `json:"fundCode"`
 	// Name string `json:"ftype"`
 }

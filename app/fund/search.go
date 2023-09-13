@@ -7,16 +7,21 @@ import (
 	"sync"
 )
 
-func rankParser(resp []byte) []model.FundBaseInfo {
-	var result model.SearchModel
+func ParseSearch(resp []byte) []string {
+	var result model.SearchResponse
 
 	json.Unmarshal(resp, &result)
 
-	return result.Data
+	v := []string{}
+	for _, m := range result.Data {
+		v = append(v, m.Code)
+	}
+
+	return v
 
 }
 
-func search(fundChan chan<- string, mainWg *sync.WaitGroup) {
+func ConditionSearch(fundChan chan<- string, mainWg *sync.WaitGroup) {
 	defer mainWg.Done()
 
 	var resp *downloader.Response
@@ -43,8 +48,8 @@ func search(fundChan chan<- string, mainWg *sync.WaitGroup) {
 		}
 	}
 
-	for _, v := range rankParser(resp.Resp) {
-		fundChan <- v.Code
+	for _, v := range ParseSearch(resp.Resp) {
+		fundChan <- v
 	}
 
 	close(fundChan)

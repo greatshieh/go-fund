@@ -17,7 +17,7 @@ type FundResult struct {
 }
 
 func Run() string {
-	var fundChan = make(chan model.FundBaseInfo, 10)
+	var fundChan = make(chan string, 10)
 	var resultChan = make(chan FundResult, 10)
 
 	var wg sync.WaitGroup
@@ -31,7 +31,7 @@ func Run() string {
 	go func() {
 		for item := range resultChan {
 			waiting4Write[item.SheetName] = append(waiting4Write[item.SheetName], item.Result)
-			global.GPA_LOG.Info(fmt.Sprintf("%s - %s, %s", item.SheetName, item.Result.BaseInfoData.Code, item.Result.BaseInfoData.Name))
+			global.GPA_LOG.Info(fmt.Sprintf("%s - %s, %s", item.SheetName, item.Result.BaseData.Code, item.Result.BaseData.Name))
 		}
 	}()
 
@@ -49,6 +49,10 @@ func Run() string {
 		cell_pre, _ := excelize.CoordinatesToCellName(ncols, len(v)+2)
 		writer.StreamWriter.AddTable("A1", cell_pre, "")
 		writer.StreamWriter.Flush()
+	}
+	if writer.WorkBook.SheetCount >= 2 {
+		writer.WorkBook.SetActiveSheet(1)
+		writer.WorkBook.DeleteSheet("Sheet1")
 	}
 
 	writer.Save()

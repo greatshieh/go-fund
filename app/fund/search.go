@@ -16,7 +16,7 @@ func rankParser(resp []byte) []model.FundBaseInfo {
 
 }
 
-func search(fundChan chan<- model.FundBaseInfo, mainWg *sync.WaitGroup) {
+func search(fundChan chan<- string, mainWg *sync.WaitGroup) {
 	defer mainWg.Done()
 
 	var resp *downloader.Response
@@ -44,7 +44,7 @@ func search(fundChan chan<- model.FundBaseInfo, mainWg *sync.WaitGroup) {
 	}
 
 	for _, v := range rankParser(resp.Resp) {
-		fundChan <- v
+		fundChan <- v.Code
 	}
 
 	close(fundChan)
